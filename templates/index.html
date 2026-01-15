@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unauthorized Construction Detection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #e6f0ff, #d1e8ff);
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #003366;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: white;
+      padding: 25px 40px;
+      border-radius: 15px;
+      display: inline-block;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: left;
+    }
+
+    label {
+      font-weight: bold;
+      color: #003366;
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+
+    input[type="file"] {
+      display: block;
+      margin-bottom: 15px;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #007bff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <h1>Unauthorized Construction Detection</h1>
+
+  <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
+    <label>Upload BEFORE Image:</label>
+    <input type="file" name="before" required>
+
+    <label>Upload AFTER Image:</label>
+    <input type="file" name="after" required>
+
+    <button type="submit">Detect Changes</button>
+  </form>
+
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div>Analyzing images... please wait 🔍</div>
+  </div>
+
+  <script>
+    document.getElementById('upload-form').addEventListener('submit', () => {
+      document.getElementById('loading-overlay').style.display = 'flex';
+    });
+  </script>
+</body>
+</html>
