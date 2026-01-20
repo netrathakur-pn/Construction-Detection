@@ -44,20 +44,6 @@ This project aims to **automate construction monitoring** using image comparison
 
 ---
 
-## 📂 Project Structure
-Construction-Detection/
-│
-├── app.py # Main Flask application
-├── detection.py # Image processing & detection logic
-├── requirements.txt # Python dependencies
-├── .gitignore # Ignored files
-│
-├── templates/ # HTML templates
-├── Static/ # CSS & static assets
-├── before_images/ # Images before construction
-├── after_images/ # Images after construction
-
-
 📸 Input & Output
 
 Input:
