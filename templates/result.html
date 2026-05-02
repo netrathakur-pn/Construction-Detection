@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<<<<<<< HEAD
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Detection Results — Construction Detection System</title>
@@ -539,5 +540,35 @@
   <span>Data: Google Earth Pro &nbsp;·&nbsp; OpenStreetMap contributors (ODbL)</span>
 </footer>
 
+=======
+  <meta charset="UTF-8">
+  <title>Detection Result</title>
+  <style>
+    body { font-family: Arial; text-align: center; background: #f3f3f3; }
+    img { width: 80%; margin: 15px 0; border-radius: 10px; }
+    .box { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 10px; 
+      display: inline-block; 
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 30px;
+    }
+    h2 { margin: 6px 0; color: #333; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Detected New Constructions: {{ detected_count }}</h2>
+    <h2>Accuracy: {{ accuracy }}%</h2>
+    <h2>Efficiency: {{ efficiency }}%</h2>
+
+    <h3>Red Overlay Output</h3>
+    <img src="/{{ result_img }}" alt="Overlay">
+
+    <h3>Binary Mask Output</h3>
+    <img src="/{{ mask_img }}" alt="Mask">
+  </div>
+>>>>>>> f8d16a1cf7af35028ac580ac9917d67b0c3a5dc3
 </body>
 </html>

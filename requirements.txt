@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 flask>=2.3.0
 opencv-python>=4.8.0
 numpy>=1.24.0
@@ -8,3 +9,8 @@ requests>=2.31.0
 # ~2 GB download on first install, model weights cached after that
 torch>=1.13.0
 torchvision>=0.14.0
+=======
+flask
+opencv-python
+numpy
+>>>>>>> f8d16a1cf7af35028ac580ac9917d67b0c3a5dc3
