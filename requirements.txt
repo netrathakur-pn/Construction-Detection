@@ -1,0 +1,10 @@
+flask>=2.3.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+scikit-image>=0.21.0
+requests>=2.31.0
+
+# Deep feature change detection (strongly recommended — significantly improves accuracy)
+# ~2 GB download on first install, model weights cached after that
+torch>=1.13.0
+torchvision>=0.14.0

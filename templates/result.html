@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detection Results — Construction Detection System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Latin&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:      #1c1c1c;
+      --soft:     #5a5a5a;
+      --faint:    #9a9a9a;
+      --rule:     #dadada;
+      --bg:       #f4f2ee;
+      --white:    #ffffff;
+      --orange:   #c94f0c;
+      --green:    #1a6b3c;
+      --green-lt: #eaf5ef;
+      --red:      #b82b0e;
+      --red-lt:   #fdf0ee;
+      --blue:     #1b3c6b;
+      --blue-lt:  #eaf0f8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      background: var(--blue);
+      padding: 4px 36px;
+      font-size: 10.5px;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.65);
+      display: flex;
+      gap: 24px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--white);
+      border-bottom: 2px solid var(--orange);
+      padding: 16px 36px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .emblem { width: 48px; height: 48px; flex-shrink: 0; }
+    header h1 {
+      font-family: 'Tiro Devanagari Latin', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--blue);
+      line-height: 1.3;
+    }
+    header p { font-size: .75rem; color: var(--soft); margin-top: 2px; }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      background: var(--white);
+      border-bottom: 1px solid var(--rule);
+      padding: 7px 36px;
+      font-size: .74rem;
+      color: var(--faint);
+    }
+    .breadcrumb a { color: var(--blue); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* ── Page ── */
+    .page { max-width: 1040px; margin: 28px auto; padding: 0 20px 56px; }
+
+    /* ── Verdict bar ── */
+    .verdict {
+      padding: 16px 20px;
+      border: 1px solid;
+      border-left: 3px solid;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .verdict.v-UNAUTHORISED { background: var(--red-lt);   border-color: #e8c4be; border-left-color: var(--red); }
+    .verdict.v-AUTHORISED   { background: var(--green-lt); border-color: #b8d8c4; border-left-color: var(--green); }
+    .verdict.v-MIXED        { background: #fdf5ee;         border-color: #f0cdb5; border-left-color: var(--orange); }
+    .verdict.v-NO_CHANGE    { background: var(--blue-lt);  border-color: #c0cfe0; border-left-color: var(--blue); }
+    .verdict-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+    .verdict-body h2 {
+      font-family: 'Tiro Devanagari Latin', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+    .v-UNAUTHORISED .verdict-body h2 { color: var(--red); }
+    .v-AUTHORISED   .verdict-body h2 { color: var(--green); }
+    .v-MIXED        .verdict-body h2 { color: var(--orange); }
+    .v-NO_CHANGE    .verdict-body h2 { color: var(--blue); }
+    .verdict-body p { font-size: .82rem; color: var(--soft); margin-top: 2px; }
+    .area-badge {
+      display: inline-block;
+      margin-top: 7px;
+      font-size: .84rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 2px;
+    }
+    .v-UNAUTHORISED .area-badge { background: #f8d7d3; color: var(--red); }
+    .v-AUTHORISED   .area-badge { background: #c8e8d8; color: var(--green); }
+    .v-MIXED        .area-badge { background: #fde8d4; color: var(--orange); }
+
+    /* ── Info row ── */
+    .info-row {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      padding: 8px 14px;
+      font-size: .77rem;
+      color: var(--soft);
+      margin-bottom: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .info-row.ok   { border-left: 3px solid var(--green); }
+    .info-row.warn { border-left: 3px solid #e9a020; }
+    .info-row.blue { border-left: 3px solid var(--blue); }
+    .info-row strong { color: var(--ink); }
+
+    /* ── Coords ── */
+    .coords {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      padding: 7px 14px;
+      font-size: .74rem;
+      color: var(--faint);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    .coords span strong {
+      font-family: 'DM Mono', monospace;
+      color: var(--ink);
+      font-size: .78rem;
+    }
+
+    /* ── Stats ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      border: 1px solid var(--rule);
+      background: var(--rule);
+      gap: 1px;
+      margin-bottom: 22px;
+    }
+    .stat {
+      background: var(--white);
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .stat .val {
+      font-family: 'Tiro Devanagari Latin', serif;
+      font-size: 1.7rem;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+    .stat .lbl {
+      font-size: .63rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--faint);
+    }
+    .stat .sub {
+      font-size: .65rem;
+      color: var(--faint);
+      margin-top: 1px;
+      font-family: 'DM Mono', monospace;
+    }
+    .stat.red .val   { color: var(--red); }
+    .stat.green .val { color: var(--green); }
+    .stat.blue .val  { color: var(--blue); }
+    .stat.amber .val { color: #c47f00; }
+
+    /* ── Section title ── */
+    .sec {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
+    .sec h3 {
+      font-family: 'Tiro Devanagari Latin', serif;
+      font-size: .92rem;
+      font-weight: 400;
+      color: var(--blue);
+      white-space: nowrap;
+    }
+    .sec .rl { flex: 1; height: 1px; background: var(--rule); }
+
+    /* ── Image grid ── */
+    .igrid {
+      display: grid;
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      margin-bottom: 20px;
+    }
+    .igrid.c2 { grid-template-columns: repeat(2,1fr); }
+    .igrid.c3 { grid-template-columns: repeat(3,1fr); }
+    .igrid.c4 { grid-template-columns: repeat(4,1fr); }
+    .icard { background: var(--white); overflow: hidden; }
+    .icard img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+    }
+    .icard .cap {
+      padding: 6px 10px;
+      font-size: .65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--faint);
+      border-top: 1px solid var(--rule);
+    }
+    .icard.rc .cap { color: var(--red);   border-top-color: #e8c4be; }
+    .icard.gc .cap { color: var(--green); border-top-color: #b8d8c4; }
+    .icard.bc .cap { color: var(--blue);  border-top-color: #c0cfe0; }
+    .icard.oc .cap { color: #a06000;      border-top-color: #ecd090; }
+
+    /* ── Table ── */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .8rem;
+      margin-bottom: 20px;
+      background: var(--white);
+      border: 1px solid var(--rule);
+    }
+    .tbl thead tr { background: var(--blue); color: #fff; }
+    .tbl th {
+      padding: 8px 12px;
+      text-align: left;
+      font-size: .68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .tbl tbody tr { border-bottom: 1px solid var(--rule); }
+    .tbl tbody tr:nth-child(even) { background: #faf8f5; }
+    .tbl td {
+      padding: 8px 12px;
+      color: var(--soft);
+      font-family: 'DM Mono', monospace;
+      font-size: .78rem;
+    }
+    .tbl td.st { font-family: 'DM Sans', sans-serif; font-weight: 600; }
+    .tbl td.st.auth   { color: var(--green); }
+    .tbl td.st.unauth { color: var(--red); }
+    .no-struct {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      padding: 14px;
+      font-size: .8rem;
+      color: var(--faint);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* ── Back ── */
+    .back { margin-top: 8px; margin-bottom: 40px; }
+    .btn-back {
+      display: inline-block;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      color: var(--blue);
+      padding: 8px 20px;
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 500;
+      transition: background .15s, border-color .15s;
+    }
+    .btn-back:hover { background: var(--blue-lt); border-color: var(--blue); }
+
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 12px 36px;
+      font-size: .7rem;
+      color: var(--faint);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    @media (max-width: 680px) {
+      .topbar, header, .breadcrumb, footer { padding-left: 14px; padding-right: 14px; }
+      .stats { grid-template-columns: repeat(3,1fr); }
+      .igrid.c4, .igrid.c3 { grid-template-columns: 1fr 1fr; }
+      .page { padding: 0 12px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>Govt. of Maharashtra — Urban Development Dept.</span>
+  <span>Final Year Project 2025–26</span>
+</div>
+
+<header>
+  <svg class="emblem" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="48" height="48" fill="#1b3c6b"/>
+    <rect x="6"  y="28" width="7" height="13" fill="#fff"/>
+    <rect x="17" y="19" width="7" height="22" fill="#fff"/>
+    <rect x="28" y="13" width="7" height="28" fill="#fff"/>
+    <rect x="38" y="22" width="4" height="19" fill="#c94f0c"/>
+    <line x1="4" y1="41" x2="44" y2="41" stroke="#c94f0c" stroke-width="1.8"/>
+    <rect x="20" y="5" width="7" height="4" fill="#c94f0c"/>
+    <line x1="23.5" y1="2" x2="23.5" y2="9" stroke="#c94f0c" stroke-width="1.4"/>
+  </svg>
+  <div>
+    <h1>Detection Results</h1>
+    <p>Satellite Construction Change Analysis &nbsp;·&nbsp; Moshi–Pimpri-Chinchwad, Pune</p>
+  </div>
+</header>
+
+<div class="breadcrumb">
+  <a href="/">Home</a> &rsaquo; <a href="/">New Analysis</a> &rsaquo; Results
+</div>
+
+<div class="page">
+
+  <!-- Verdict -->
+  <div class="verdict v-{{ verdict }}">
+    <div class="verdict-icon">
+      {% if verdict=="UNAUTHORISED" %}&#9888;
+      {% elif verdict=="AUTHORISED"  %}&#10003;
+      {% elif verdict=="MIXED"       %}&#9432;
+      {% else %}&#8722;{% endif %}
+    </div>
+    <div class="verdict-body">
+      {% if verdict=="UNAUTHORISED" %}
+        <h2>Unauthorised Construction Detected</h2>
+        <p>{{ unauthorised_count }} structure(s) found outside registered building footprints — flagged for inspection.</p>
+        {% if unauthorised_sqm %}
+        <span class="area-badge">&#9888; ~{{ unauthorised_sqm|int }} m² of unauthorised construction</span>
+        {% endif %}
+      {% elif verdict=="AUTHORISED" %}
+        <h2>All Construction Authorised</h2>
+        <p>{{ authorised_count }} structure(s) detected — all within existing registered footprints. No violations found.</p>
+        {% if authorised_sqm %}
+        <span class="area-badge">&#10003; ~{{ authorised_sqm|int }} m² of authorised construction</span>
+        {% endif %}
+      {% elif verdict=="MIXED" %}
+        <h2>Mixed Result — Partial Violation</h2>
+        <p>{{ authorised_count }} authorised &amp; {{ unauthorised_count }} unauthorised structure(s) detected.</p>
+        {% if unauthorised_sqm %}
+        <span class="area-badge">&#9888; ~{{ unauthorised_sqm|int }} m² unauthorised &nbsp;|&nbsp; ~{{ authorised_sqm|int if authorised_sqm else 0 }} m² authorised</span>
+        {% endif %}
+      {% else %}
+        <h2>No Significant Changes Detected</h2>
+        <p>The before and after images appear structurally similar.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- OSM + alignment status -->
+  <div class="info-row {% if osm_building_count > 0 %}ok{% else %}warn{% endif %}">
+    <strong>Permit Data (OSM):</strong> {{ osm_status }}
+  </div>
+  <div class="info-row blue">
+    <strong>Image Alignment:</strong> {{ alignment_status }}
+  </div>
+
+  <!-- Coordinates -->
+  <div class="coords">
+    <span>N <strong>{{ lat_max }}°</strong></span>
+    <span>S <strong>{{ lat_min }}°</strong></span>
+    <span>W <strong>{{ lon_min }}°</strong></span>
+    <span>E <strong>{{ lon_max }}°</strong></span>
+    <span>OSM Buildings Loaded: <strong>{{ osm_building_count }}</strong></span>
+    <span>Pixel Change: <strong>{{ change_ratio }}%</strong></span>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat red">
+      <div class="val">{{ unauthorised_count }}</div>
+      <div class="lbl">Unauthorised</div>
+      {% if unauthorised_sqm %}<div class="sub">~{{ unauthorised_sqm|int }} m²</div>{% endif %}
+    </div>
+    <div class="stat green">
+      <div class="val">{{ authorised_count }}</div>
+      <div class="lbl">Authorised</div>
+      {% if authorised_sqm %}<div class="sub">~{{ authorised_sqm|int }} m²</div>{% endif %}
+    </div>
+    <div class="stat blue">
+      <div class="val">{{ total_changes }}</div>
+      <div class="lbl">Total Structures</div>
+    </div>
+    <div class="stat amber">
+      <div class="val">{{ change_ratio }}%</div>
+      <div class="lbl">Changed Area</div>
+    </div>
+    <div class="stat blue">
+      <div class="val">{{ osm_building_count }}</div>
+      <div class="lbl">OSM Footprints</div>
+    </div>
+    <div class="stat">
+      <div class="val" style="color:var(--soft);font-size:1.3rem;">
+        {% if unauthorised_sqm %}{{ (unauthorised_sqm + (authorised_sqm or 0))|int }}{% else %}—{% endif %}
+      </div>
+      <div class="lbl">Total Area m²</div>
+    </div>
+  </div>
+
+  <!-- Detected structures table -->
+  <div class="sec"><h3>Detected Structures</h3><div class="rl"></div></div>
+  {% if buildings %}
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Status</th>
+        <th>Area (m²)</th>
+        <th>Area (px)</th>
+        <th>Location (x, y)</th>
+        <th>Size (w × h)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for b in buildings %}
+      <tr>
+        <td>{{ b.id }}</td>
+        <td class="st {% if b.status=='AUTHORISED' %}auth{% else %}unauth{% endif %}">
+          {% if b.status=='AUTHORISED' %}&#10003; Authorised{% else %}&#9888; Unauthorised{% endif %}
+        </td>
+        <td>{% if b.area_sqm %}~{{ b.area_sqm|int }}{% else %}—{% endif %}</td>
+        <td>{{ b.area_px }}</td>
+        <td>{{ b.x }}, {{ b.y }}</td>
+        <td>{{ b.w }} × {{ b.h }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="no-struct">No structures above the minimum area threshold were detected.</div>
+  {% endif %}
+
+  <!-- Satellite images + OSM -->
+  <div class="sec"><h3>Input Images</h3><div class="rl"></div></div>
+  <div class="igrid {% if osm_overlay_img and osm_debug_img %}c4{% elif osm_overlay_img or osm_debug_img %}c3{% else %}c2{% endif %}">
+    <div class="icard">
+      <img src="/{{ before_img }}" alt="Before"/>
+      <div class="cap">Before — Google Earth Pro</div>
+    </div>
+    <div class="icard">
+      <img src="/{{ after_img }}" alt="After"/>
+      <div class="cap">After — Google Earth Pro</div>
+    </div>
+    {% if osm_overlay_img %}
+    <div class="icard gc">
+      <img src="/{{ osm_overlay_img }}" alt="OSM Zone"/>
+      <div class="cap">OSM Authorised Zone</div>
+    </div>
+    {% endif %}
+    {% if osm_debug_img %}
+    <div class="icard oc">
+      <img src="/{{ osm_debug_img }}" alt="OSM Outlines"/>
+      <div class="cap">OSM Building Outlines — Alignment Check</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Result + heatmap -->
+  <div class="sec"><h3>Analysis Output</h3><div class="rl"></div></div>
+  <div class="igrid c2">
+    <div class="icard rc">
+      <img src="/{{ result_img }}" alt="Result"/>
+      <div class="cap">Result — Red = Unauthorised &nbsp;|&nbsp; Green = Authorised</div>
+    </div>
+    {% if change_map_img %}
+    <div class="icard oc">
+      <img src="/{{ change_map_img }}" alt="Change Map"/>
+      <div class="cap">Change Intensity Map</div>
+    </div>
+    {% else %}
+    <div class="icard">
+      <img src="/{{ mask_img }}" alt="Mask"/>
+      <div class="cap">Combined Change Mask</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Masks -->
+  <div class="sec"><h3>Change Masks</h3><div class="rl"></div></div>
+  <div class="igrid c4">
+    <div class="icard">
+      <img src="/{{ mask_img }}" alt="Combined"/>
+      <div class="cap">Combined</div>
+    </div>
+    {% if authorised_count > 0 %}
+    <div class="icard gc">
+      <img src="/{{ mask_auth_img }}" alt="Authorised"/>
+      <div class="cap">Authorised Regions</div>
+    </div>
+    {% endif %}
+    {% if unauthorised_count > 0 %}
+    <div class="icard rc">
+      <img src="/{{ mask_unauth_img }}" alt="Unauthorised"/>
+      <div class="cap">Unauthorised Regions</div>
+    </div>
+    {% endif %}
+    {% if osm_mask_img %}
+    <div class="icard bc">
+      <img src="/{{ osm_mask_img }}" alt="OSM Permit"/>
+      <div class="cap">OSM Permit Mask</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="back">
+    <a href="/" class="btn-back">&#8592; &nbsp;New Analysis</a>
+  </div>
+
+</div>
+
+<footer>
+  <span>Unauthorised Construction Detection System &nbsp;·&nbsp; Final Year Engineering Project 2025–26</span>
+  <span>Data: Google Earth Pro &nbsp;·&nbsp; OpenStreetMap contributors (ODbL)</span>
+</footer>
+
+</body>
+</html>
